@@ -1,13 +1,14 @@
 """
 FatFIRE India Web Calculator
-FastAPI app powered by r/fatfireindia community wisdom.
+FastAPI app powered by r/fatfireindia community wisdom + Claude AI.
 """
 import json
 import asyncio
+import os
 from pathlib import Path
 from typing import Optional
 from fastapi import FastAPI, Request, BackgroundTasks
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
@@ -158,6 +159,82 @@ async def calculate(req: CalculatorRequest):
             "Gold": to_inr(result.gold_corpus),
         },
     })
+
+
+@app.post("/analyze")
+async def analyze_stream(req: CalculatorRequest):
+    """Stream Claude AI analysis grounded in r/fatfireindia community data."""
+    has_api_key = bool(os.environ.get("ANTHROPIC_API_KEY"))
+    if not has_api_key:
+        async def no_key():
+            msg = "Set ANTHROPIC_API_KEY to unlock AI-powered personalized analysis."
+            yield f"data: {json.dumps({'text': msg})}\n\n"
+            yield "data: [DONE]\n\n"
+        return StreamingResponse(no_key(), media_type="text/event-stream")
+
+    # Calculate FIRE results first (reuse calculate logic)
+    inp = FIREInputs(
+        current_age=req.current_age,
+        target_retire_age=req.target_retire_age,
+        life_expectancy=req.life_expectancy,
+        monthly_income=req.monthly_income,
+        monthly_expenses=req.monthly_expenses,
+        current_equity=req.current_equity,
+        current_debt=req.current_debt,
+        current_epf=req.current_epf,
+        current_ppf=req.current_ppf,
+        current_nps=req.current_nps,
+        current_gold=req.current_gold,
+        current_real_estate_equity=req.current_real_estate_equity,
+        current_cash=req.current_cash,
+        monthly_equity_sip=req.monthly_equity_sip,
+        monthly_debt_sip=req.monthly_debt_sip,
+        monthly_epf_employee=req.monthly_epf_employee,
+        monthly_ppf=req.monthly_ppf,
+        monthly_nps=req.monthly_nps,
+        monthly_gold=req.monthly_gold,
+        equity_return=req.equity_return / 100,
+        debt_return=req.debt_return / 100,
+        inflation=req.inflation / 100,
+        target_monthly_expense_today=req.target_monthly_expense_today,
+        healthcare_buffer_monthly=req.healthcare_buffer_monthly,
+        travel_annual=req.travel_annual,
+        swr=req.swr / 100,
+        fire_type=req.fire_type,
+        annual_savings_growth=req.annual_savings_growth / 100,
+    )
+    result   = calculate_fire(inp)
+    def to_inr(v): return format_inr(v) if v else "₹0"
+
+    fire_results = {
+        "on_track":                result.on_track,
+        "fire_corpus_required_fmt": to_inr(result.fire_corpus_required),
+        "projected_corpus_fmt":    to_inr(result.projected_corpus_at_target),
+        "corpus_gap_fmt":          to_inr(abs(result.corpus_gap)),
+        "projected_fire_age":      result.projected_fire_age,
+        "monthly_withdrawal":      to_inr(result.monthly_withdrawal),
+        "corpus_survives":         result.corpus_survives_to_life_expectancy,
+        "corpus_lasts_years":      result.corpus_lasts_years,
+        "coast_fire_achievable":   result.coast_fire_achievable,
+        "coast_fire_corpus":       to_inr(result.coast_fire_corpus),
+        "savings_rate":            round((req.monthly_income - req.monthly_expenses) / req.monthly_income * 100) if req.monthly_income else 0,
+    }
+
+    user_data = req.model_dump()
+
+    from intelligence import async_stream_analysis
+
+    async def generate():
+        try:
+            async for chunk in async_stream_analysis(user_data, fire_results):
+                yield f"data: {json.dumps({'text': chunk})}\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+        finally:
+            yield "data: [DONE]\n\n"
+
+    return StreamingResponse(generate(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
 @app.post("/scrape")
