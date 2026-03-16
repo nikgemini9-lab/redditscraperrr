@@ -22,7 +22,11 @@ static_path = Path("static")
 static_path.mkdir(exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-_scrape_status = {"running": False, "done": False, "post_count": 0, "comment_count": 0}
+_scrape_status = {
+    "running": False, "done": False,
+    "post_count": 0, "comment_count": 0,
+    "stage": "", "error": None,
+}
 
 
 class CalculatorRequest(BaseModel):
@@ -166,22 +170,32 @@ async def trigger_scrape(background_tasks: BackgroundTasks):
 
 async def _run_scrape():
     global _scrape_status
-    _scrape_status["running"] = True
-    _scrape_status["done"] = False
+    _scrape_status.update({"running": True, "done": False, "stage": "starting", "error": None})
+
+    def progress_cb(info: dict):
+        _scrape_status["stage"] = info.get("stage", "")
+        if "total" in info:
+            stage = info["stage"]
+            if "comment" in stage:
+                _scrape_status["comment_count"] = info["total"]
+            else:
+                _scrape_status["post_count"] = info["total"]
+
     try:
         loop = asyncio.get_event_loop()
-        from scraper import scrape
-        await loop.run_in_executor(None, lambda: scrape(max_posts=200))
+        from scraper import scrape as do_scrape
+        stats = await loop.run_in_executor(None, lambda: do_scrape(progress_cb=progress_cb))
         insights = get_community_insights()
         _scrape_status.update({
             "running": False,
             "done": True,
+            "stage": "complete",
             "post_count": insights.get("post_count", 0),
             "comment_count": insights.get("comment_count", 0),
+            "error": None,
         })
     except Exception as e:
-        _scrape_status["running"] = False
-        _scrape_status["error"] = str(e)
+        _scrape_status.update({"running": False, "stage": "error", "error": str(e)})
 
 
 @app.get("/scrape/status")
