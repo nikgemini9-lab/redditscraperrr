@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FatFIRE India Calculator — r/fatfireindia Community</title>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --card: #111827;
+    --card2: #1a2235;
+    --border: #1e3a5f;
+    --accent: #f97316;
+    --accent2: #06b6d4;
+    --accent3: #10b981;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --gold: #f59e0b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #0f1f3d 0%, #1a0a2e 50%, #0f1f3d 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .logo { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 900; color: #fff; flex-shrink: 0;
+  }
+  .logo-text h1 { font-size: 1.5rem; font-weight: 800; color: #fff; }
+  .logo-text p { font-size: 0.75rem; color: var(--muted); }
+  .header-stats { display: flex; gap: 24px; }
+  .hstat { text-align: center; }
+  .hstat-val { font-size: 1.2rem; font-weight: 700; color: var(--accent); }
+  .hstat-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .reddit-badge {
+    background: #ff4500; color: #fff; padding: 6px 14px; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ── Layout ── */
+  main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  @media (max-width: 1100px) { .grid-2 { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+  }
+  .card-title {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1px; color: var(--muted); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title::before { content: ''; width: 3px; height: 14px; background: var(--accent); border-radius: 2px; display: inline-block; }
+
+  /* ── Form inputs ── */
+  .input-group { margin-bottom: 16px; }
+  label { display: block; font-size: 0.75rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+  input[type=number], input[type=range], select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; color: var(--text);
+    font-size: 0.9rem; transition: border-color 0.2s;
+  }
+  input[type=number]:focus, select:focus {
+    outline: none; border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(6,182,212,0.1);
+  }
+  .input-prefix {
+    position: relative;
+  }
+  .input-prefix input { padding-left: 28px; }
+  .input-prefix::before {
+    content: '₹'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 0.85rem; pointer-events: none;
+  }
+  .slider-row { display: flex; align-items: center; gap: 12px; }
+  .slider-val { font-weight: 700; color: var(--accent); min-width: 50px; text-align: right; font-size: 0.95rem; }
+  input[type=range] {
+    padding: 0; height: 6px; accent-color: var(--accent);
+    border: none; background: transparent;
+  }
+  .section-header {
+    font-size: 0.85rem; font-weight: 700; color: var(--accent2);
+    margin: 20px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 24px; border-radius: 10px; font-weight: 700;
+    font-size: 0.9rem; cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), #dc2626);
+    color: #fff; width: 100%; justify-content: center; font-size: 1rem;
+    padding: 16px; margin-top: 8px;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(249,115,22,0.3); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-secondary {
+    background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  }
+  .btn-scrape {
+    background: linear-gradient(135deg, #ff4500, #ff6534);
+    color: #fff; border: none;
+  }
+
+  /* ── Results ── */
+  .result-hero {
+    background: linear-gradient(135deg, var(--card2), #0f2a1a);
+    border: 1px solid var(--accent3); border-radius: 20px;
+    padding: 32px; text-align: center; margin-bottom: 24px;
+    position: relative; overflow: hidden;
+  }
+  .result-hero.danger { background: linear-gradient(135deg, var(--card2), #2a0f0f); border-color: var(--red); }
+  .result-hero::before {
+    content: ''; position: absolute; top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .result-hero.danger::before { background: radial-gradient(circle, rgba(239,68,68,0.05) 0%, transparent 60%); }
+  .result-status {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; margin-bottom: 8px;
+  }
+  .result-status.ok { color: var(--accent3); }
+  .result-status.gap { color: var(--red); }
+  .result-corpus-big { font-size: 3rem; font-weight: 900; color: #fff; line-height: 1; }
+  .result-corpus-label { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+  .result-corpus-projected { font-size: 1.4rem; font-weight: 700; margin-top: 12px; }
+  .result-corpus-projected.ok { color: var(--accent3); }
+  .result-corpus-projected.gap { color: var(--red); }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .stat-box {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; text-align: center;
+  }
+  .stat-box-val { font-size: 1.3rem; font-weight: 800; color: var(--accent); }
+  .stat-box-lbl { font-size: 0.68rem; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── Progress bar ── */
+  .progress-bar-wrap { background: var(--bg); border-radius: 99px; height: 12px; overflow: hidden; margin: 8px 0; }
+  .progress-bar { height: 100%; border-radius: 99px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+  .progress-bar.ok { background: linear-gradient(90deg, var(--accent3), #34d399); }
+  .progress-bar.warn { background: linear-gradient(90deg, var(--gold), #fcd34d); }
+  .progress-bar.danger { background: linear-gradient(90deg, var(--red), #f87171); }
+
+  /* ── Corpus breakdown ── */
+  .breakdown-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid #1e2d45;
+  }
+  .breakdown-item:last-child { border-bottom: none; }
+  .breakdown-label { font-size: 0.85rem; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  .breakdown-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .breakdown-val { font-weight: 700; font-size: 0.95rem; }
+
+  /* ── Recommendations ── */
+  .rec-item {
+    padding: 12px 16px; border-radius: 10px; margin-bottom: 8px;
+    font-size: 0.85rem; display: flex; gap: 10px; align-items: flex-start;
+    background: var(--card2); border-left: 3px solid var(--accent);
+  }
+  .rec-item.positive { border-color: var(--accent3); }
+  .rec-icon { flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Community insights ── */
+  .insight-card {
+    background: var(--card2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; text-align: center;
+  }
+  .insight-val { font-size: 1.6rem; font-weight: 800; color: var(--gold); }
+  .insight-lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ── Scraper panel ── */
+  .scraper-panel {
+    background: linear-gradient(135deg, #1a0a2e, #0f1f3d);
+    border: 1px solid #ff4500; border-radius: 16px; padding: 24px;
+    margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+  }
+  .scraper-info h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .scraper-info p { font-size: 0.8rem; color: var(--muted); }
+  .pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ff4500; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.3)} }
+
+  /* ── FIRE type selector ── */
+  .fire-types { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .fire-type-btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+    cursor: pointer; border: 1px solid var(--border); background: var(--bg);
+    color: var(--muted); transition: all 0.2s;
+  }
+  .fire-type-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .fire-type-btn:hover:not(.active) { border-color: var(--accent2); color: var(--accent2); }
+
+  /* ── Tabs ── */
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 10px 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* ── Loading ── */
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Donut chart ── */
+  .donut-wrap { position: relative; width: 180px; height: 180px; margin: 0 auto; }
+  svg.donut { transform: rotate(-90deg); }
+  .donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .donut-center-val { font-size: 1rem; font-weight: 800; color: #fff; }
+  .donut-center-lbl { font-size: 0.6rem; color: var(--muted); }
+
+  /* ── Timeline ── */
+  .timeline { display: flex; gap: 0; overflow-x: auto; padding: 8px 0; }
+  .milestone {
+    flex: 1; min-width: 100px; text-align: center; position: relative;
+    padding: 12px 8px 8px;
+  }
+  .milestone::before {
+    content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 12px; height: 12px; border-radius: 50%; background: var(--border);
+    border: 2px solid var(--border);
+  }
+  .milestone.reached::before { background: var(--accent3); border-color: var(--accent3); }
+  .milestone.target::before { background: var(--accent); border-color: var(--accent); width: 16px; height: 16px; top: -2px; }
+  .milestone-year { font-size: 1.1rem; font-weight: 800; color: #fff; }
+  .milestone-lbl { font-size: 0.65rem; color: var(--muted); margin-top: 2px; }
+  .milestone-amount { font-size: 0.75rem; color: var(--accent2); margin-top: 2px; }
+
+  /* ── Section divider ── */
+  .section-divider { margin: 32px 0 24px; display: flex; align-items: center; gap: 16px; }
+  .section-divider h2 { font-size: 1.1rem; font-weight: 800; white-space: nowrap; }
+  .section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ── Tooltip ── */
+  [data-tip] { cursor: help; border-bottom: 1px dashed var(--muted); }
+  .tooltip-text { display: none; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute; background: #1e293b; color: var(--text);
+    font-size: 0.75rem; padding: 6px 10px; border-radius: 6px;
+    white-space: nowrap; z-index: 200; margin-top: 4px;
+    border: 1px solid var(--border);
+  }
+  [data-tip] { position: relative; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center; padding: 40px 24px;
+    border-top: 1px solid var(--border); color: var(--muted); font-size: 0.8rem;
+  }
+  footer a { color: var(--accent2); text-decoration: none; }
+
+  .hidden { display: none !important; }
+  .loading-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 999; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+  }
+  .loading-overlay.show { display: flex; }
+  .loading-overlay p { font-size: 1rem; color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner" style="width:40px;height:40px;border-width:4px"></div>
+  <p id="loadingText">Scraping r/fatfireindia…</p>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔥</div>
+    <div class="logo-text">
+      <h1>FatFIRE India</h1>
+      <p>r/fatfireindia Community Calculator</p>
+    </div>
+  </div>
+  <div class="header-stats" id="headerStats">
+    {% if insights.post_count %}
+    <div class="hstat">
+      <div class="hstat-val">{{ insights.post_count }}</div>
+      <div class="hstat-lbl">Posts Analyzed</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-val">{{ insights.comment_count }}</div>
+      <div class="hstat-lbl">Comments Mined</div>
+    </div>
+    {% if insights.median_corpus_cr %}
+    <div class="hstat">
+      <div class="hstat-val">₹{{ insights.median_corpus_cr }} Cr</div>
+      <div class="hstat-lbl">Median FIRE Target</div>
+    </div>
+    {% endif %}
+    {% endif %}
+  </div>
+  <div class="reddit-badge">
+    <span>r/fatfireindia</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- Scraper Panel -->
+  <div class="scraper-panel">
+    <div class="scraper-info">
+      <h3>
+        {% if scrape_status.done %}
+          ✅ Community data loaded — {{ scrape_status.post_count }} posts, {{ scrape_status.comment_count }} comments
+        {% elif scrape_status.running %}
+          <span class="pulse"></span> Scraping r/fatfireindia…
+        {% else %}
+          📡 Load live data from r/fatfireindia
+        {% endif %}
+      </h3>
+      <p>Mines corpus targets, SWR discussions, expense benchmarks & retirement ages from the community</p>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-scrape" onclick="triggerScrape()" id="scrapeBtn">
+        {% if scrape_status.running %}
+          <span class="spinner"></span> Scraping…
+        {% else %}
+          🔄 Scrape Reddit Now
+        {% endif %}
+      </button>
+      <div style="font-size:0.75rem;color:var(--muted);max-width:200px">
+        Uses public Reddit JSON API — no credentials needed
+      </div>
+    </div>
+  </div>
+
+  {% if insights.post_count %}
+  <!-- Community Insights Strip -->
+  <div class="section-divider"><h2>📊 r/fatfireindia Community Insights</h2></div>
+  <div class="grid-4" style="margin-bottom:32px">
+    <div class="insight-card">
+      <div class="insight-val">₹{{ insights.median_corpus_cr or '~10' }} Cr</div>
+      <div class="insight-lbl">Median FIRE Corpus Target</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-val">{{ insights.median_swr_pct or '3.5' }}%</div>
+      <div class="insight-lbl">Community SWR Consensus</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-val">Age {{ insights.median_retire_age or '45' }}</div>
+      <div class="insight-lbl">Median Target Retire Age</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-val">{{ insights.corpus_mentions_count or '0' }}</div>
+      <div class="insight-lbl">Corpus Mentions Found</div>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Main Calculator Grid -->
+  <div class="grid-2" style="align-items:start">
+
+    <!-- LEFT: Input Form -->
+    <div>
+      <div class="card">
+        <div class="card-title">FIRE Calculator Inputs</div>
+
+        <!-- FIRE Type -->
+        <div class="input-group">
+          <label>FIRE Type</label>
+          <div class="fire-types" id="fireTypes">
+            <button class="fire-type-btn" data-type="lean" onclick="setFireType('lean',this)">🌱 Lean FIRE<br><small style="font-weight:400;font-size:0.7rem">₹1-3 Cr frugal</small></button>
+            <button class="fire-type-btn active" data-type="fat" onclick="setFireType('fat',this)">🔥 Fat FIRE<br><small style="font-weight:400;font-size:0.7rem">₹10Cr+ luxury</small></button>
+            <button class="fire-type-btn" data-type="regular" onclick="setFireType('regular',this)">💼 Regular<br><small style="font-weight:400;font-size:0.7rem">₹3-10 Cr</small></button>
+            <button class="fire-type-btn" data-type="barista" onclick="setFireType('barista',this)">☕ Barista<br><small style="font-weight:400;font-size:0.7rem">Semi-retire</small></button>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tab-bar">
+          <div class="tab active" onclick="switchTab('personal',this)">Personal</div>
+          <div class="tab" onclick="switchTab('assets',this)">Assets</div>
+          <div class="tab" onclick="switchTab('investments',this)">Monthly SIPs</div>
+          <div class="tab" onclick="switchTab('assumptions',this)">Assumptions</div>
+        </div>
+
+        <!-- Tab: Personal -->
+        <div class="tab-pane active" id="tab-personal">
+          <div class="grid-2" style="gap:12px">
+            <div class="input-group">
+              <label>Current Age</label>
+              <input type="number" id="current_age" value="32" min="18" max="70">
+            </div>
+            <div class="input-group">
+              <label>Target Retire Age</label>
+              <input type="number" id="target_retire_age" value="45" min="25" max="75">
+            </div>
+          </div>
+          <div class="grid-2" style="gap:12px">
+            <div class="input-group">
+              <label>Life Expectancy</label>
+              <input type="number" id="life_expectancy" value="85" min="60" max="100">
+            </div>
+            <div class="input-group">
+              <label>Monthly Expenses (₹)</label>
+              <div class="input-prefix">
+                <input type="number" id="target_monthly_expense_today" value="150000" step="5000">
+              </div>
+            </div>
+          </div>
+          <div class="grid-2" style="gap:12px">
+            <div class="input-group">
+              <label>Monthly Income (₹)</label>
+              <div class="input-prefix">
+                <input type="number" id="monthly_income" value="300000" step="10000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Healthcare Buffer/mo (₹)</label>
+              <div class="input-prefix">
+                <input type="number" id="healthcare_buffer_monthly" value="20000" step="2000">
+              </div>
+            </div>
+          </div>
+          <div class="grid-2" style="gap:12px">
+            <div class="input-group">
+              <label>Annual Travel Budget (₹)</label>
+              <div class="input-prefix">
+                <input type="number" id="travel_annual" value="500000" step="50000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Annual Savings Growth %</label>
+              <div class="slider-row">
+                <input type="range" id="annual_savings_growth" min="2" max="20" step="0.5" value="8" oninput="document.getElementById('asg_val').textContent=this.value+'%'">
+                <span class="slider-val" id="asg_val">8%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Assets -->
+        <div class="tab-pane" id="tab-assets">
+          <p class="section-header">Current Portfolio (₹)</p>
+          <div class="grid-2" style="gap:12px">
+            <div class="input-group">
+              <label>Equity / Mutual Funds</label>
+              <div class="input-prefix">
+                <input type="number" id="current_equity" value="5000000" step="100000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Debt / FD / Bonds</label>
+              <div class="input-prefix">
+                <input type="number" id="current_debt" value="2000000" step="100000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>EPF Balance</label>
+              <div class="input-prefix">
+                <input type="number" id="current_epf" value="1500000" step="50000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>PPF Balance</label>
+              <div class="input-prefix">
+                <input type="number" id="current_ppf" value="500000" step="50000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>NPS Balance</label>
+              <div class="input-prefix">
+                <input type="number" id="current_nps" value="0" step="50000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Gold (Physical/SGBs)</label>
+              <div class="input-prefix">
+                <input type="number" id="current_gold" value="500000" step="50000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Real Estate Equity</label>
+              <div class="input-prefix">
+                <input type="number" id="current_real_estate_equity" value="0" step="500000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Cash / Savings</label>
+              <div class="input-prefix">
+                <input type="number" id="current_cash" value="500000" step="50000">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Monthly SIPs -->
+        <div class="tab-pane" id="tab-investments">
+          <p class="section-header">Monthly Investments (₹)</p>
+          <div class="grid-2" style="gap:12px">
+            <div class="input-group">
+              <label>Equity SIP</label>
+              <div class="input-prefix">
+                <input type="number" id="monthly_equity_sip" value="50000" step="2500">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Debt / Hybrid SIP</label>
+              <div class="input-prefix">
+                <input type="number" id="monthly_debt_sip" value="20000" step="2500">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>EPF (Employee contribution)</label>
+              <div class="input-prefix">
+                <input type="number" id="monthly_epf_employee" value="15000" step="1000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>PPF Monthly</label>
+              <div class="input-prefix">
+                <input type="number" id="monthly_ppf" value="12500" step="1000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>NPS Monthly</label>
+              <div class="input-prefix">
+                <input type="number" id="monthly_nps" value="0" step="1000">
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Gold SIP (SGB/ETF)</label>
+              <div class="input-prefix">
+                <input type="number" id="monthly_gold" value="5000" step="1000">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Assumptions -->
+        <div class="tab-pane" id="tab-assumptions">
+          <p class="section-header">Return Assumptions (%)</p>
+          <div class="input-group">
+            <label data-tip="Nifty 50 CAGR historically ~13%">Equity Returns % /yr</label>
+            <div class="slider-row">
+              <input type="range" id="equity_return" min="8" max="18" step="0.5" value="13" oninput="document.getElementById('eq_val').textContent=this.value+'%'">
+              <span class="slider-val" id="eq_val">13%</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label data-tip="G-Secs, FDs, corporate bonds">Debt Returns % /yr</label>
+            <div class="slider-row">
+              <input type="range" id="debt_return" min="4" max="12" step="0.5" value="7.5" oninput="document.getElementById('dt_val').textContent=this.value+'%'">
+              <span class="slider-val" id="dt_val">7.5%</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label data-tip="India CPI historically 6-7%">Inflation % /yr</label>
+            <div class="slider-row">
+              <input type="range" id="inflation" min="3" max="12" step="0.5" value="6.5" oninput="document.getElementById('inf_val').textContent=this.value+'%'">
+              <span class="slider-val" id="inf_val">6.5%</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label data-tip="r/fatfireindia recommends 3-3.5% for India (vs 4% Trinity). Lower due to higher inflation.">Safe Withdrawal Rate %</label>
+            <div class="slider-row">
+              <input type="range" id="swr" min="2" max="5" step="0.1" value="3.5" oninput="document.getElementById('swr_val').textContent=this.value+'%'">
+              <span class="slider-val" id="swr_val">3.5%</span>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="calculate()">
+          <span>🔥 Calculate My FIRE Number</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT: Results -->
+    <div id="resultsPanel">
+      <!-- Default placeholder -->
+      <div class="card" id="defaultMsg">
+        <div style="text-align:center;padding:60px 20px">
+          <div style="font-size:4rem;margin-bottom:16px">🔥</div>
+          <h2 style="font-size:1.3rem;margin-bottom:8px">Your FIRE Number Awaits</h2>
+          <p style="color:var(--muted);font-size:0.9rem;max-width:360px;margin:0 auto">
+            Fill in your details and hit Calculate. We'll tell you exactly how much you need, when you'll get there, and what the community thinks.
+          </p>
+          <div style="margin-top:32px;padding:16px;background:var(--card2);border-radius:12px;text-align:left;border:1px solid var(--border)">
+            <p style="font-size:0.75rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Community benchmarks</p>
+            <div style="font-size:0.85rem;display:grid;gap:6px">
+              <div>🌱 Lean FIRE — <strong>₹1-3 Cr</strong> (frugal, Tier-2 city)</div>
+              <div>💼 Regular FIRE — <strong>₹3-10 Cr</strong> (metro, comfortable)</div>
+              <div>🔥 Fat FIRE — <strong>₹10-30 Cr</strong> (luxury, metro)</div>
+              <div>👑 Ultra Fat FIRE — <strong>₹30 Cr+</strong> (any lifestyle)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results (initially hidden) -->
+      <div id="resultsContent" class="hidden">
+        <!-- Hero card -->
+        <div class="result-hero" id="resultHero">
+          <div class="result-status" id="resultStatus">ON TRACK</div>
+          <div class="result-corpus-big" id="corpusRequired">₹0</div>
+          <div class="result-corpus-label">Your FIRE Corpus Required</div>
+          <div class="result-corpus-projected" id="corpusProjected">—</div>
+          <div id="gapText" style="margin-top:8px;font-size:0.9rem;color:var(--muted)"></div>
+        </div>
+
+        <!-- Stat grid -->
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-box-val" id="statFireAge">—</div>
+            <div class="stat-box-lbl">FIRE Age</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-val" id="statYearsLeft">—</div>
+            <div class="stat-box-lbl">Years to FIRE</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-val" id="statMonthlyWD">—</div>
+            <div class="stat-box-lbl">Monthly Withdrawal</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-val" id="statSavingsRate">—</div>
+            <div class="stat-box-lbl">Savings Rate</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-val" id="statCorpusLasts">—</div>
+            <div class="stat-box-lbl">Corpus Lasts</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-val" id="statTax">—</div>
+            <div class="stat-box-lbl">Effective Tax</div>
+          </div>
+        </div>
+
+        <!-- Progress -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">Progress to FIRE</div>
+          <div id="progressLabel" style="display:flex;justify-content:space-between;font-size:0.8rem;color:var(--muted);margin-bottom:6px">
+            <span>Current corpus</span><span id="progressPct">0%</span>
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" id="progressBar" style="width:0%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--muted);margin-top:6px">
+            <span id="progressCurrent">₹0</span>
+            <span id="progressTarget">₹0</span>
+          </div>
+        </div>
+
+        <!-- Corpus breakdown + donut -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">Projected Corpus Breakdown at Retirement</div>
+          <div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+            <div class="donut-wrap" id="donutWrap">
+              <svg class="donut" viewBox="0 0 100 100" width="180" height="180">
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#1e2d45" stroke-width="16"/>
+                <g id="donutSegments"></g>
+              </svg>
+              <div class="donut-center">
+                <div class="donut-center-val" id="donutTotal">₹0</div>
+                <div class="donut-center-lbl">Total</div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:200px" id="breakdownList"></div>
+          </div>
+        </div>
+
+        <!-- Milestones timeline -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">Financial Milestones</div>
+          <div class="timeline" id="milestoneTimeline"></div>
+        </div>
+
+        <!-- Coast FIRE -->
+        <div class="card" style="margin-bottom:16px" id="coastCard">
+          <div class="card-title">Coast FIRE Status</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-size:1.4rem;font-weight:800" id="coastCorpus">—</div>
+              <div style="font-size:0.8rem;color:var(--muted)">Coast FIRE corpus needed today</div>
+              <div style="font-size:0.8rem;margin-top:4px" id="coastStatus">—</div>
+            </div>
+            <div id="coastBadge" style="font-size:2rem">⏳</div>
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-title">AI + Community Recommendations</div>
+          <div id="recommendationsList"></div>
+        </div>
+
+        <!-- Tax note -->
+        <div class="card" style="font-size:0.8rem;color:var(--muted)">
+          <strong style="color:var(--text)">Tax Note (New Regime FY25):</strong>
+          Estimated annual tax on withdrawal: <strong id="taxAmount" style="color:var(--gold)">₹0</strong> |
+          Effective rate: <strong id="taxRate" style="color:var(--gold)">0%</strong>. Consult a CA for actual tax planning.
+          LTCG on equity (>₹1.25L): 12.5%. Debt LTCG: slab rate.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIRE Types Explainer -->
+  <div class="section-divider" style="margin-top:48px"><h2>🇮🇳 FIRE Variants in India</h2></div>
+  <div class="grid-4" style="margin-bottom:48px">
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:8px">🌱</div>
+      <h3 style="font-weight:700;margin-bottom:6px">Lean FIRE</h3>
+      <div style="color:var(--accent);font-weight:700;margin-bottom:8px">₹1–3 Cr corpus</div>
+      <p style="font-size:0.82rem;color:var(--muted)">Frugal lifestyle in Tier-2/3 cities. Monthly expense ~₹40–80K. Requires strict spending discipline.</p>
+    </div>
+    <div class="card" style="border-color:var(--accent)">
+      <div style="font-size:2rem;margin-bottom:8px">🔥</div>
+      <h3 style="font-weight:700;margin-bottom:6px">Fat FIRE</h3>
+      <div style="color:var(--accent);font-weight:700;margin-bottom:8px">₹10 Cr+ corpus</div>
+      <p style="font-size:0.82rem;color:var(--muted)">Comfortable metro lifestyle. Business class travel, premium healthcare, no compromises. Community gold standard.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:8px">☕</div>
+      <h3 style="font-weight:700;margin-bottom:6px">Barista FIRE</h3>
+      <div style="color:var(--accent);font-weight:700;margin-bottom:8px">Partial corpus</div>
+      <p style="font-size:0.82rem;color:var(--muted)">Semi-retire with part-time/passion work covering ₹30–50K/month. Corpus covers the rest. Very popular in India.</p>
+    </div>
+    <div class="card">
+      <div style="font-size:2rem;margin-bottom:8px">🏖️</div>
+      <h3 style="font-weight:700;margin-bottom:6px">Coast FIRE</h3>
+      <div style="color:var(--accent);font-weight:700;margin-bottom:8px">Compounding handles it</div>
+      <p style="font-size:0.82rem;color:var(--muted)">Stop investing, let corpus compound to target. Only need to cover current expenses from work.</p>
+    </div>
+  </div>
+
+  <!-- India-specific FIRE Formula explainer -->
+  <div class="section-divider"><h2>📐 The India FIRE Formula</h2></div>
+  <div class="grid-2" style="margin-bottom:48px">
+    <div class="card">
+      <div class="card-title">Why India needs different SWR</div>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.8">
+        The American 4% Rule (Trinity Study) was built for US conditions: ~2-3% inflation, mature capital markets.<br><br>
+        <strong style="color:var(--text)">India is fundamentally different:</strong><br>
+        • Inflation historically <strong style="color:var(--accent)">6-7%</strong> (vs 2-3% US)<br>
+        • Healthcare costs growing <strong style="color:var(--accent)">15%+/year</strong><br>
+        • Rupee depreciation vs USD (~3-4% historical)<br>
+        • Sequence-of-returns risk on Indian equities higher<br><br>
+        r/fatfireindia community consensus: <strong style="color:var(--accent3)">3–3.5% SWR</strong> for India.
+        Use 3% if you have high healthcare needs or retiring before 40.
+      </p>
+    </div>
+    <div class="card">
+      <div class="card-title">India FIRE Number Formula</div>
+      <div style="background:var(--bg);border-radius:10px;padding:16px;font-family:monospace;font-size:0.85rem;margin-bottom:16px">
+        <div style="color:var(--accent2)">// Step 1: Inflation-adjust expenses</div>
+        <div>future_expense = monthly × 12</div>
+        <div style="margin-top:6px;color:var(--accent2)">// Step 2: Apply SWR</div>
+        <div>FIRE_number = future_expense / SWR</div>
+        <div style="margin-top:6px;color:var(--accent2)">// Fat FIRE multiplier</div>
+        <div>corpus = FIRE_number × 1.4</div>
+        <div style="margin-top:6px;color:var(--accent2)">// Add healthcare buffer</div>
+        <div>total = corpus × 1.10</div>
+      </div>
+      <div style="font-size:0.8rem;color:var(--muted)">
+        <strong style="color:var(--text)">Example:</strong> ₹1.5L/month expenses today at 45 with 6.5% inflation for 13 years = ₹3.4L/month at retirement.
+        Annual = ₹41L. At 3.5% SWR = <strong style="color:var(--accent)">₹11.7 Cr</strong> FIRE corpus needed.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>Built with 🔥 by analyzing r/fatfireindia community | Data from public Reddit API</p>
+  <p style="margin-top:8px">
+    <strong>Disclaimer:</strong> Not financial advice. Consult a SEBI-registered financial advisor.
+    All calculations are estimates based on historical returns.
+  </p>
+  <p style="margin-top:8px">
+    <a href="https://www.reddit.com/r/fatfireindia" target="_blank">r/fatfireindia</a> ·
+    Inspired by <a href="https://github.com/ksanjeev284/reddit-universal-scraper" target="_blank">reddit-universal-scraper</a>
+  </p>
+</footer>
+
+<script>
+let currentFireType = 'fat';
+
+const COLORS = ['#f97316','#06b6d4','#10b981','#f59e0b','#8b5cf6','#ec4899'];
+
+function setFireType(type, btn) {
+  currentFireType = type;
+  document.querySelectorAll('.fire-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+function getVal(id) {
+  return parseFloat(document.getElementById(id).value) || 0;
+}
+
+async function calculate() {
+  const payload = {
+    current_age: getVal('current_age'),
+    target_retire_age: getVal('target_retire_age'),
+    life_expectancy: getVal('life_expectancy'),
+    monthly_income: getVal('monthly_income'),
+    monthly_expenses: getVal('target_monthly_expense_today'),
+    current_equity: getVal('current_equity'),
+    current_debt: getVal('current_debt'),
+    current_epf: getVal('current_epf'),
+    current_ppf: getVal('current_ppf'),
+    current_nps: getVal('current_nps'),
+    current_gold: getVal('current_gold'),
+    current_real_estate_equity: getVal('current_real_estate_equity'),
+    current_cash: getVal('current_cash'),
+    monthly_equity_sip: getVal('monthly_equity_sip'),
+    monthly_debt_sip: getVal('monthly_debt_sip'),
+    monthly_epf_employee: getVal('monthly_epf_employee'),
+    monthly_ppf: getVal('monthly_ppf'),
+    monthly_nps: getVal('monthly_nps'),
+    monthly_gold: getVal('monthly_gold'),
+    equity_return: getVal('equity_return'),
+    debt_return: getVal('debt_return'),
+    inflation: getVal('inflation'),
+    target_monthly_expense_today: getVal('target_monthly_expense_today'),
+    healthcare_buffer_monthly: getVal('healthcare_buffer_monthly'),
+    travel_annual: getVal('travel_annual'),
+    swr: getVal('swr'),
+    fire_type: currentFireType,
+    annual_savings_growth: getVal('annual_savings_growth'),
+  };
+
+  try {
+    const res = await fetch('/calculate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    renderResults(data);
+  } catch(e) {
+    alert('Calculation error: ' + e.message);
+  }
+}
+
+function renderResults(d) {
+  document.getElementById('defaultMsg').classList.add('hidden');
+  document.getElementById('resultsContent').classList.remove('hidden');
+
+  // Hero
+  const hero = document.getElementById('resultHero');
+  hero.className = 'result-hero' + (d.on_track ? '' : ' danger');
+  document.getElementById('resultStatus').textContent = d.on_track ? '✅ ON TRACK' : '⚠️ COURSE CORRECTION NEEDED';
+  document.getElementById('resultStatus').className = 'result-status ' + (d.on_track ? 'ok' : 'gap');
+  document.getElementById('corpusRequired').textContent = d.fire_corpus_required_fmt;
+  document.getElementById('corpusProjected').textContent = 'Projected: ' + d.projected_corpus_fmt;
+  document.getElementById('corpusProjected').className = 'result-corpus-projected ' + (d.on_track ? 'ok' : 'gap');
+
+  const gapTxt = d.on_track
+    ? `Surplus: ${d.corpus_gap_fmt} above target 🎉`
+    : `Shortfall: ${d.corpus_gap_fmt} — needs action`;
+  document.getElementById('gapText').textContent = gapTxt;
+
+  // Stats
+  document.getElementById('statFireAge').textContent = d.projected_fire_age ? 'Age ' + d.projected_fire_age : (d.on_track ? 'Age ' + (getVal('current_age') + (d.years_to_fire || 0)) : '—');
+  document.getElementById('statYearsLeft').textContent = d.years_to_fire ? d.years_to_fire + ' yrs' : '60+';
+  document.getElementById('statMonthlyWD').textContent = d.monthly_withdrawal;
+  document.getElementById('statSavingsRate').textContent = d.savings_rate + '%';
+  document.getElementById('statCorpusLasts').textContent = d.corpus_survives ? 'Full life ✓' : (d.corpus_lasts_years + ' yrs');
+  document.getElementById('statTax').textContent = d.effective_tax_rate + '%';
+
+  // Progress bar
+  const current = d.projected_corpus_at_target;
+  const target = d.fire_corpus_required;
+  const pct = Math.min(100, Math.round(current / target * 100));
+  const pb = document.getElementById('progressBar');
+  pb.style.width = pct + '%';
+  pb.className = 'progress-bar ' + (pct >= 100 ? 'ok' : pct >= 70 ? 'warn' : 'danger');
+  document.getElementById('progressPct').textContent = pct + '%';
+  document.getElementById('progressCurrent').textContent = d.projected_corpus_fmt;
+  document.getElementById('progressTarget').textContent = d.fire_corpus_required_fmt;
+
+  // Corpus breakdown
+  const breakdown = d.corpus_breakdown;
+  const breakdownFmt = d.corpus_breakdown_fmt;
+  const keys = Object.keys(breakdown);
+  const total = Object.values(breakdown).reduce((a,b) => a+b, 0);
+
+  // Donut
+  document.getElementById('donutTotal').textContent = d.projected_corpus_fmt;
+  const segments = document.getElementById('donutSegments');
+  segments.innerHTML = '';
+  let offset = 0;
+  const r = 40, circ = 2 * Math.PI * r;
+  keys.forEach((key, i) => {
+    const frac = total > 0 ? breakdown[key] / total : 0;
+    const dash = circ * frac;
+    const gap = circ - dash;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', 50); circle.setAttribute('cy', 50); circle.setAttribute('r', r);
+    circle.setAttribute('fill', 'none');
+    circle.setAttribute('stroke', COLORS[i % COLORS.length]);
+    circle.setAttribute('stroke-width', 16);
+    circle.setAttribute('stroke-dasharray', `${dash} ${gap}`);
+    circle.setAttribute('stroke-dashoffset', -offset);
+    segments.appendChild(circle);
+    offset += dash;
+  });
+
+  // Breakdown list
+  const bl = document.getElementById('breakdownList');
+  bl.innerHTML = keys.map((key, i) => `
+    <div class="breakdown-item">
+      <div class="breakdown-label">
+        <div class="breakdown-dot" style="background:${COLORS[i % COLORS.length]}"></div>
+        ${key}
+      </div>
+      <div class="breakdown-val">${breakdownFmt[key]}</div>
+    </div>
+  `).join('');
+
+  // Milestones
+  const tl = document.getElementById('milestoneTimeline');
+  const curAge = getVal('current_age');
+  const retAge = getVal('target_retire_age');
+  const milestones = [
+    { label: 'Today', year: new Date().getFullYear(), age: curAge, class: 'reached' },
+    d.half_fire_age ? { label: '50% FIRE', year: new Date().getFullYear() + (d.half_fire_age - curAge), age: d.half_fire_age, class: '', amount: d.fire_corpus_required_fmt.replace(/₹(\S+).*/, '₹' + (parseFloat(d.fire_corpus_required) / 2 / 1e7).toFixed(1) + ' Cr') } : null,
+    d.coast_fire_achievable ? { label: 'Coast FIRE', year: new Date().getFullYear(), age: curAge, class: 'reached', amount: d.coast_fire_corpus } : null,
+    { label: d.on_track ? 'FIRE! 🔥' : 'Target FIRE', year: new Date().getFullYear() + (retAge - curAge), age: retAge, class: 'target', amount: d.fire_corpus_required_fmt },
+  ].filter(Boolean);
+
+  tl.innerHTML = milestones.map(m => `
+    <div class="milestone ${m.class}">
+      <div class="milestone-year">${m.age ? 'Age '+m.age : ''}</div>
+      <div class="milestone-lbl">${m.label}</div>
+      ${m.amount ? `<div class="milestone-amount">${typeof m.amount === 'string' ? m.amount : ''}</div>` : ''}
+    </div>
+  `).join('');
+
+  // Coast FIRE
+  document.getElementById('coastCorpus').textContent = d.coast_fire_corpus;
+  document.getElementById('coastStatus').innerHTML = d.coast_fire_achievable
+    ? '<span style="color:var(--accent3);font-weight:700">✅ You\'ve already hit Coast FIRE! Your corpus will grow to target without additional investments.</span>'
+    : '<span style="color:var(--muted)">Keep investing to reach Coast FIRE</span>';
+  document.getElementById('coastBadge').textContent = d.coast_fire_achievable ? '🏖️' : '⏳';
+
+  // Recommendations
+  const rl = document.getElementById('recommendationsList');
+  rl.innerHTML = d.recommendations.map(rec => {
+    const positive = rec.includes('ON TRACK') || rec.includes('Coast FIRE') || rec.includes('Great') || rec.includes('✅');
+    return `<div class="rec-item ${positive ? 'positive' : ''}">
+      <span class="rec-icon">${positive ? '💡' : '⚠️'}</span>
+      <span>${rec}</span>
+    </div>`;
+  }).join('') || '<div class="rec-item positive"><span>💡</span><span>You\'re all set! Review annually.</span></div>';
+
+  // Tax
+  document.getElementById('taxAmount').textContent = d.estimated_annual_tax;
+  document.getElementById('taxRate').textContent = d.effective_tax_rate + '%';
+}
+
+async function triggerScrape() {
+  const btn = document.getElementById('scrapeBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Initiating…';
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('loadingText').textContent = 'Scraping r/fatfireindia community posts & comments…';
+
+  try {
+    await fetch('/scrape', { method: 'POST' });
+    pollScrapeStatus();
+  } catch(e) {
+    alert('Scrape error: ' + e);
+    btn.disabled = false;
+    document.getElementById('loadingOverlay').classList.remove('show');
+  }
+}
+
+function pollScrapeStatus() {
+  const interval = setInterval(async () => {
+    try {
+      const res = await fetch('/scrape/status');
+      const data = await res.json();
+      document.getElementById('loadingText').textContent =
+        `Scraping… ${data.post_count || 0} posts, ${data.comment_count || 0} comments collected`;
+      if (!data.running) {
+        clearInterval(interval);
+        document.getElementById('loadingOverlay').classList.remove('show');
+        location.reload();
+      }
+    } catch(e) {
+      clearInterval(interval);
+      document.getElementById('loadingOverlay').classList.remove('show');
+    }
+  }, 3000);
+}
+
+// Auto-calculate on load with defaults
+window.addEventListener('load', () => {
+  calculate();
+});
+</script>
+</body>
+</html>
